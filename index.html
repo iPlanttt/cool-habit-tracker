@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Habit tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E6E1D5;--card:#F3EFE6;--ink:#1D1A22;--soft:#6B6470;--line:#CFC8B8;--frame:#1D1A22;--red:#B8443B;--teal:#5B8F8A;--ochre:#D9A843;--cream:#F3EFE6;
+--rr:6px 10px 7px 9px/9px 6px 10px 7px;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1A171D;--card:#262229;--ink:#EDE7DA;--soft:#A39CA8;--line:#3A343E;--frame:#4A444E}}
+:root[data-theme="dark"]{--bg:#1A171D;--card:#262229;--ink:#EDE7DA;--soft:#A39CA8;--line:#3A343E;--frame:#4A444E}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:'Bricolage Grotesque',system-ui,sans-serif;font-size:17px;line-height:1.4}
+body:after{content:'';position:fixed;inset:0;pointer-events:none;z-index:30;opacity:.7;mix-blend-mode:multiply;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .1 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#hd{max-width:460px;margin:0 auto;padding:14px 16px 0;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:800;font-size:19px;letter-spacing:-.02em}
+.lg{display:flex;gap:4px}
+.lg button{border:2px solid var(--ink);background:none;color:var(--ink);font:inherit;font-size:12px;font-weight:700;padding:3px 8px;border-radius:var(--rr);cursor:pointer}
+.lg button.on{background:var(--ink);color:var(--bg)}
+main{max-width:460px;margin:0 auto;padding:6px 16px 110px}
+h2{font-size:21px;font-weight:800;letter-spacing:-.02em;margin:0 0 10px}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:var(--rr);padding:18px;margin-top:16px}
+.hero{text-align:center;margin-top:12px}
+.cv{border:5px solid var(--frame);border-radius:3px 5px 3px 4px;box-shadow:0 10px 24px rgba(0,0,0,.28);width:min(270px,76%);margin:0 auto;overflow:hidden;line-height:0}
+.cv svg{width:100%;height:auto;display:block}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:14px}
+.chips.sc{flex-wrap:nowrap;overflow-x:auto;justify-content:safe center;scrollbar-width:none;padding-bottom:2px}
+.chip{display:inline-flex;align-items:center;gap:6px;flex:none;background:var(--ink);color:var(--bg);border-radius:var(--rr);padding:3px 11px 3px 4px;font-size:14px;font-weight:600;white-space:nowrap}
+.chip.no{background:none;color:var(--soft);border:2px solid var(--line);padding:1px 9px 1px 2px}
+.ci{display:inline-block;width:22px;height:22px;flex:none;vertical-align:-6px}
+.ci svg,.em svg{width:100%;height:100%;display:block}
+.sub{color:var(--soft);font-size:15px;margin:0}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.nav b{font-weight:700;text-transform:capitalize}
+.nav button{width:40px;height:40px;border:2px solid var(--ink);border-radius:var(--rr);background:none;color:var(--ink);font:inherit;font-size:20px;cursor:pointer}
+.nav button:disabled{opacity:.3;cursor:default}
+.q{padding:14px 0;border-top:2px dashed var(--line)}
+.q p{margin:0 0 10px;font-weight:600}
+.opts{display:flex;gap:8px}
+.opts button{flex:1;height:48px;border:3px solid var(--ink);border-radius:var(--rr);background:var(--card);color:var(--ink);font:inherit;font-weight:700;font-size:17px;box-shadow:2px 3px 0 var(--ink);cursor:pointer}
+.opts button:active{transform:translate(1px,2px);box-shadow:1px 1px 0 var(--ink)}
+.opts button.sel{background:var(--red);color:var(--cream)}
+button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+textarea{width:100%;min-height:110px;resize:vertical;font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:2px solid var(--ink);border-radius:var(--rr);padding:12px;display:block}
+.wc{text-align:right;color:var(--soft);font-size:13px;margin-top:6px}
+.dtx{margin:8px 0 0;white-space:pre-wrap;font-size:15px;color:var(--soft)}
+.t{display:flex;gap:12px;align-items:center;padding:10px 0}
+.em{width:46px;height:46px;flex:none}
+.t.lock .em{filter:grayscale(1);opacity:.5}
+.tx{flex:1;min-width:0}
+.tx b{font-weight:700;display:block}
+.tx small{color:var(--soft);font-size:14px}
+.bar{height:12px;border:2px solid var(--ink);border-radius:var(--rr);background:var(--card);margin:6px 0 2px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--teal);transition:width .4s}
+.done .bar i{background:var(--ochre)}
+.zoo{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.zoo button{border:3px solid var(--ink);background:var(--card);color:var(--ink);border-radius:var(--rr);padding:0 0 4px;font:inherit;font-size:11px;font-weight:600;cursor:pointer;overflow:hidden}
+.zoo button.sel{background:var(--ochre);color:#1D1A22}
+.zoo svg{width:100%;height:auto;display:block;margin-bottom:3px}
+.h{display:flex;gap:12px;align-items:center;width:100%;padding:10px 0;border:0;border-top:2px dashed var(--line);background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.h:first-of-type{border-top:0}
+.sw{width:50px;height:28px;border:3px solid var(--ink);border-radius:99px;background:var(--card);position:relative;flex:none}
+.sw:after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--ink);transition:left .2s}
+.on .sw{background:var(--teal)}
+.on .sw:after{left:25px;background:var(--cream)}
+.cfg{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:14px;color:var(--soft);padding:0 0 10px 58px}
+select,input{font:inherit;color:var(--ink);background:var(--bg);border:2px solid var(--ink);border-radius:var(--rr)}
+.cfg select{height:34px;padding:0 6px;font-size:14px}
+.f{display:grid;gap:8px}
+.f input,.f select{height:46px;padding:0 12px;font-size:16px;width:100%}
+.ig{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
+.ig button{border:3px solid transparent;background:none;padding:0;border-radius:50%;cursor:pointer;line-height:0}
+.ig button.sel{border-color:var(--red)}
+.pill{height:48px;border:3px solid var(--ink);border-radius:var(--rr);background:var(--ochre);color:#1D1A22;font:inherit;font-weight:800;font-size:17px;box-shadow:2px 3px 0 var(--ink);cursor:pointer}
+.day{padding:14px 16px;margin-top:12px}
+.day .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+.day .top b{text-transform:capitalize}
+.day .top button{border:2px solid var(--ink);background:none;color:var(--ink);font:inherit;font-size:14px;font-weight:600;border-radius:var(--rr);padding:3px 12px;cursor:pointer}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:5;background:var(--ink);display:flex;justify-content:center;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px))}
+.tabs button{flex:1;max-width:110px;border:0;background:none;color:var(--bg);font:inherit;font-size:15px;font-weight:700;padding:10px 0;border-radius:var(--rr);cursor:pointer}
+.tabs button.on{background:var(--ochre);color:#1D1A22}
+.ov{position:fixed;inset:0;background:rgba(20,16,26,.7);display:grid;place-items:center;padding:20px;z-index:9}
+.ov .box{background:var(--card);border:3px solid var(--ink);border-radius:var(--rr);padding:22px;text-align:center;max-width:340px;width:100%}
+.ov .cv{width:min(200px,60%)}
+.ov h3{font-size:24px;font-weight:800;letter-spacing:-.02em;margin:14px 0 2px}
+.ov p{margin:0 0 16px;color:var(--soft)}
+.ov .ci{width:30px;height:30px;vertical-align:-10px}
+.ov .pill{padding:0 22px}
+.link{background:none;border:0;color:var(--soft);font:inherit;font-size:14px;text-decoration:underline;cursor:pointer;display:block;margin:18px auto 0}
+.tlw{margin-top:6px}
+.tl{display:flex;align-items:center;gap:10px;background:var(--ink);color:var(--bg);border-radius:var(--rr);padding:6px 12px 6px 6px;margin-top:8px;font-weight:600;text-align:left}
+.tl>span:nth-child(2){flex:1;min-width:0}
+.tl .ci{width:32px;height:32px}
+.mv{display:flex;gap:6px;margin-left:auto}
+.mv button{width:34px;height:34px;border:2px solid var(--bg);background:none;color:var(--bg);border-radius:var(--rr);font:inherit;font-size:13px;cursor:pointer}
+.mv button:disabled{opacity:.3}
+.pill.sm{height:40px;padding:0 22px;font-size:15px;margin-top:14px}
+.pill.sm0{height:40px;padding:0 18px;font-size:15px}
+.pill.alt{background:var(--card);color:var(--ink)}
+.btns{display:flex;gap:8px;justify-content:center}
+.hint{color:var(--soft);font-size:14px;margin:10px 0 0}
+.cv.arr{outline:3px dashed var(--ochre);outline-offset:3px;touch-action:none}
+.cv.arr .it{cursor:grab}
+.ipv{display:flex;align-items:center;gap:12px}
+.ig{max-height:300px;overflow:auto;padding:4px}
+.ig svg{width:100%;height:auto;display:block}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Habit tracker">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#E6E1D5">
+</head>
+<body>
+<header id="hd"></header>
+<main id="app"></main>
+<nav class="tabs" id="tabs"></nav>
+<div id="modal"></div>
+<script>
+var KEY='ioana-pas-cu-pas-v2';
+var LB=[['food','y'],['move','y'],['sleep','r'],['water','y'],['read','y'],['walk','y'],['film','y'],['sport','y'],['write','y'],['med','y'],['stretch','y'],['vit','y'],['skin','y'],['cook','y'],['tidy','y'],['learn','y'],['lang','y'],['create','y'],['draw','y'],['music','y'],['friend','y'],['air','y'],['phone','y'],['bed','y'],['grat','y'],['mood','r'],['energy','r'],['fruit','y'],['nosmoke','y'],['budget','y']];
+var PL={R:'#B8443B',P:'#D98E92',T:'#5B8F8A',O:'#D9A843',S:'#7194AD',G:'#8DA27E',M:'#6C4A5E',K:'#1D1A22',C:'#EAE4D6',W:'#F6F1E7'};
+var IC={
+food:'<circle cx="14" cy="19" r="5" fill="G"/><circle cx="21" cy="15" r="6" fill="G"/><circle cx="27" cy="19" r="5" fill="G"/><circle cx="22" cy="19" r="3" fill="R"/><path d="M8 22h24c0 7-5 11-12 11S8 29 8 22z" fill="T"/>',
+move:'<path d="M8 28h25v3H8z" fill="K"/><path d="M9 28V16l6-2 3 5 8 3 7 3v3z" fill="R"/><path d="M16 21l3-3M20 23l3-3" stroke="C" stroke-width="1.6"/>',
+sleep:'<circle cx="18" cy="21" r="11" fill="O"/><circle cx="24" cy="17" r="9.5" fill="C"/><path d="M29 8l1.5 3.5L34 13l-3.5 1.5L29 18l-1.5-3.5L24 13l3.5-1.5z" fill="O"/>',
+water:'<path d="M20 8c5 7 9 11 9 16a9 9 0 0 1-18 0c0-5 4-9 9-16z" fill="S"/><path d="M15 24a5 5 0 0 0 4 5" stroke="C" stroke-width="2" fill="none" stroke-linecap="round"/>',
+read:'<path d="M8 12h11v19H8z" fill="R"/><path d="M21 12h11v19H21z" fill="M"/><path d="M19 12h2v19h-2z" fill="K"/><path d="M11 17h5M24 17h5M24 21h5" stroke="C" stroke-width="1.5"/>',
+walk:'<rect x="18" y="24" width="4" height="9" fill="M"/><circle cx="20" cy="17" r="9" fill="G"/><circle cx="15" cy="20" r="5" fill="G"/><circle cx="25" cy="20" r="5" fill="T"/>',
+film:'<rect x="8" y="18" width="24" height="13" rx="1" fill="K"/><path d="M8 18l-1-6 25-4 1 6z" fill="R"/><path d="M14 17l-1-6M20 16l-1-6M26 15l-1-6" stroke="C" stroke-width="2"/>',
+sport:'<rect x="9" y="15" width="5" height="11" fill="R"/><rect x="26" y="15" width="5" height="11" fill="R"/><rect x="14" y="19" width="12" height="3" fill="K"/><rect x="6" y="18" width="3" height="5" fill="K"/><rect x="31" y="18" width="3" height="5" fill="K"/>',
+write:'<path d="M10 30l2-7 14-14 5 5-14 14z" fill="O"/><path d="M10 30l2-7 5 5z" fill="P"/><path d="M26 9l5 5" stroke="R" stroke-width="3"/>',
+med:'<path d="M20 12c4 4 4 11 0 16-4-5-4-12 0-16z" fill="P"/><path d="M10 17c6 0 10 4 10 11-6 0-10-4-10-11z" fill="R"/><path d="M30 17c-6 0-10 4-10 11 6 0 10-4 10-11z" fill="R"/><path d="M9 31h22" stroke="K" stroke-width="2"/>',
+stretch:'<path d="M20 15v10" stroke="T" stroke-width="5" stroke-linecap="round"/><circle cx="20" cy="10" r="3.5" fill="K"/><path d="M20 17l-8-7M20 17l8-7M20 25l-6 8M20 25l6 8" stroke="K" stroke-width="3" fill="none" stroke-linecap="round"/>',
+vit:'<g transform="rotate(-40 20 20)"><path d="M20 14h-7a6 6 0 0 0 0 12h7z" fill="R"/><path d="M20 14h7a6 6 0 0 1 0 12h-7z" fill="O"/></g>',
+skin:'<rect x="11" y="18" width="18" height="14" rx="3" fill="P"/><rect x="13" y="11" width="14" height="7" rx="1" fill="K"/><rect x="15" y="22" width="10" height="5" fill="C"/>',
+cook:'<circle cx="17" cy="22" r="10" fill="K"/><circle cx="17" cy="22" r="7.5" fill="M"/><circle cx="17" cy="22" r="5.5" fill="C"/><circle cx="17" cy="22" r="2.5" fill="O"/><path d="M26 18l9-5" stroke="K" stroke-width="3" stroke-linecap="round"/>',
+tidy:'<path d="M29 7L19 23" stroke="M" stroke-width="3" stroke-linecap="round"/><path d="M12 24l9-3 6 4-4 8H11z" fill="O"/><path d="M14 28l-1 4M18 27l-1 5M22 27l-1 5" stroke="K" stroke-width="1.2"/>',
+learn:'<circle cx="20" cy="17" r="9" fill="O"/><rect x="16" y="25" width="8" height="6" rx="1" fill="K"/><path d="M17 33h6" stroke="K" stroke-width="2"/><path d="M17 17l3 4 3-4" stroke="R" stroke-width="1.8" fill="none"/>',
+lang:'<path d="M8 10h24v16H20l-6 6v-6H8z" fill="S"/><path d="M14 16h12M14 21h8" stroke="C" stroke-width="2"/>',
+create:'<path d="M20 9c-9 0-13 7-11 13s7 9 12 9c3 0 3-3 1-5s0-5 4-4c5 1 7-2 5-6-2-4-6-7-11-7z" fill="O"/><circle cx="15" cy="17" r="2.2" fill="R"/><circle cx="21" cy="14" r="2.2" fill="T"/><circle cx="27" cy="17" r="2.2" fill="S"/><circle cx="14" cy="24" r="2.2" fill="M"/>',
+draw:'<path d="M12 29l3-9 11-11 6 6-11 11z" fill="S"/><path d="M12 29l3-9 6 6z" fill="K"/><path d="M26 9l6 6" stroke="M" stroke-width="3"/>',
+music:'<path d="M10 24v-4a10 10 0 0 1 20 0v4" stroke="K" stroke-width="3" fill="none"/><rect x="8" y="22" width="6" height="10" rx="2" fill="R"/><rect x="26" y="22" width="6" height="10" rx="2" fill="R"/>',
+friend:'<path d="M8 10h17v11H16l-4 4v-4H8z" fill="P"/><path d="M15 17h17v11h-4v4l-4-4H15z" fill="T"/>',
+air:'<circle cx="20" cy="20" r="7" fill="O"/><path d="M20 7v4M20 29v4M7 20h4M29 20h4M11 11l3 3M26 26l3 3M29 11l-3 3M14 26l-3 3" stroke="O" stroke-width="2.2" stroke-linecap="round"/>',
+phone:'<rect x="13" y="8" width="14" height="24" rx="3" fill="K"/><rect x="15" y="11" width="10" height="16" fill="S"/><path d="M9 31L31 9" stroke="R" stroke-width="3" stroke-linecap="round"/>',
+bed:'<rect x="7" y="14" width="3" height="18" fill="K"/><rect x="30" y="20" width="3" height="12" fill="K"/><rect x="7" y="23" width="26" height="6" fill="S"/><rect x="10" y="18" width="9" height="5" rx="2" fill="P"/>',
+grat:'<g fill="P"><circle cx="20" cy="12" r="5"/><circle cx="28" cy="18" r="5"/><circle cx="25" cy="27" r="5"/><circle cx="15" cy="27" r="5"/><circle cx="12" cy="18" r="5"/></g><circle cx="20" cy="21" r="4" fill="O"/>',
+mood:'<circle cx="20" cy="20" r="12" fill="O"/><circle cx="15.5" cy="17" r="1.8" fill="K"/><circle cx="24.5" cy="17" r="1.8" fill="K"/><path d="M14 23q6 6 12 0" stroke="K" stroke-width="2.2" fill="none" stroke-linecap="round"/>',
+energy:'<path d="M23 7L11 23h8l-2 11 12-17h-8z" fill="O"/>',
+fruit:'<circle cx="16" cy="23" r="8" fill="R"/><circle cx="24" cy="23" r="8" fill="R"/><path d="M20 16c0-4 2-6 5-8" stroke="M" stroke-width="2" fill="none"/><path d="M22 12c3-3 6-2 7-1-2 3-5 4-7 1z" fill="G"/>',
+nosmoke:'<rect x="8" y="19" width="17" height="6" fill="W" stroke="K" stroke-width="1.2"/><rect x="25" y="19" width="7" height="6" fill="O" stroke="K" stroke-width="1.2"/><path d="M8 31L32 9" stroke="R" stroke-width="3" stroke-linecap="round"/>',
+budget:'<circle cx="20" cy="20" r="11" fill="O"/><circle cx="20" cy="20" r="7" fill="none" stroke="R" stroke-width="2"/><path d="M20 15.5v9" stroke="R" stroke-width="2"/>',
+back:'<path d="M9 16q11 8 22 0v6q-11 8-22 0z" fill="O"/><path d="M24 22l4 11h-5z" fill="O"/><path d="M12 19l2 1.5M17 21l2 1.5M22 21l2-1.5" stroke="R" stroke-width="1.6"/>',
+daily:'<path d="M9 28L8 14l8 7 4-10 4 10 8-7-1 14z" fill="O"/><circle cx="8" cy="14" r="2" fill="R"/><circle cx="20" cy="11" r="2" fill="R"/><circle cx="32" cy="14" r="2" fill="R"/>',
+diary:'<rect x="10" y="8" width="20" height="25" rx="2" fill="T"/><path d="M14 8v25" stroke="K" stroke-width="2"/><path d="M18 14h9M18 19h9M18 24h6" stroke="C" stroke-width="1.8"/>',
+star:'<path d="M20 8l3.6 8 8.4 1-6.2 5.8 1.7 8.4L20 27l-7.5 4.2 1.7-8.4L8 17l8.4-1z" fill="O"/>',
+cash:'<rect x="6" y="12" width="28" height="16" rx="2" fill="G"/><circle cx="20" cy="20" r="4.5" fill="C"/><circle cx="11" cy="20" r="1.6" fill="C"/><circle cx="29" cy="20" r="1.6" fill="C"/>',
+coins:'<path d="M10 24v5c0 2 4.5 4 10 4s10-2 10-4v-5z" fill="O"/><ellipse cx="20" cy="24" rx="10" ry="4" fill="O" stroke="K" stroke-width="1.3"/><path d="M12 15v3c0 1.5 3.5 3 8 3s8-1.5 8-3v-3z" fill="O"/><ellipse cx="20" cy="15" rx="8" ry="3" fill="O" stroke="K" stroke-width="1.3"/>',
+piggy:'<ellipse cx="19" cy="21" rx="12" ry="9" fill="P"/><circle cx="31" cy="20" r="4" fill="P"/><circle cx="32" cy="20" r="1" fill="K"/><path d="M14 13l3 4h-5z" fill="P"/><rect x="12" y="28" width="4" height="5" fill="P"/><rect x="22" y="28" width="4" height="5" fill="P"/><path d="M16 16h7" stroke="K" stroke-width="1.8" stroke-linecap="round"/><circle cx="25" cy="19" r="1.3" fill="K"/>',
+wallet:'<rect x="7" y="13" width="26" height="19" rx="3" fill="M"/><rect x="7" y="13" width="26" height="6" rx="2" fill="R"/><circle cx="28" cy="25" r="2.2" fill="O"/>',
+bag:'<path d="M15 9h10l-3 5h-4z" fill="O"/><path d="M18 14c-8 4-10 11-7 16 4 3 14 3 18 0 3-5 1-12-7-16z" fill="O"/><path d="M20 20v9M17 23q3-3 6 0" stroke="R" stroke-width="2" fill="none"/>',
+card:'<rect x="6" y="11" width="28" height="19" rx="3" fill="S"/><rect x="6" y="15" width="28" height="4" fill="K"/><rect x="10" y="23" width="9" height="3" fill="C"/>',
+gem:'<path d="M12 12h16l5 7-13 14L7 19z" fill="S"/><path d="M7 19h26M12 12l8 21M28 12l-8 21" stroke="C" stroke-width="1.3" fill="none"/>',
+coffee:'<path d="M9 16h18v9a8 8 0 0 1-8 8h-2a8 8 0 0 1-8-8z" fill="M"/><path d="M27 19h3a3.5 3.5 0 0 1 0 7h-4" stroke="M" stroke-width="3" fill="none"/><path d="M15 8q-2 3 0 5M21 8q-2 3 0 5" stroke="K" stroke-width="1.8" fill="none" stroke-linecap="round"/>',
+tea:'<path d="M8 20h20v3a9 9 0 0 1-9 9h-2a9 9 0 0 1-9-9z" fill="T"/><path d="M28 22h2a3 3 0 0 1 0 6h-3" stroke="T" stroke-width="2.6" fill="none"/><path d="M18 8v10" stroke="K" stroke-width="1.6"/><rect x="15" y="14" width="6" height="5" fill="O"/>',
+bread:'<path d="M8 20c0-6 5-9 12-9s12 3 12 9v11H8z" fill="O"/><path d="M14 17l2 4M20 15l2 5M26 17l2 4" stroke="R" stroke-width="2" stroke-linecap="round"/>',
+pizza:'<path d="M20 33L7 12a26 26 0 0 1 26 0z" fill="O"/><path d="M7 12a26 26 0 0 1 26 0" stroke="R" stroke-width="3" fill="none"/><circle cx="16" cy="17" r="2.4" fill="R"/><circle cx="24" cy="17" r="2.4" fill="R"/><circle cx="20" cy="24" r="2.4" fill="R"/>',
+cake:'<rect x="9" y="20" width="22" height="12" rx="2" fill="P"/><path d="M9 24q3 3 5 0t5 0 5 0 7 0" stroke="C" stroke-width="2.4" fill="none"/><rect x="19" y="12" width="2.4" height="8" fill="K"/><path d="M20.2 8c2 2 1 4 0 4s-2-2 0-4z" fill="O"/>',
+carrot:'<path d="M9 32L23 11l6 6z" fill="O"/><path d="M23 11c0-4 2-5 4-5 0 3-1 5-4 5zM29 17c4 0 5-2 5-4-3 0-5 1-5 4z" fill="G"/>',
+icecream:'<path d="M13 21h14L20 34z" fill="O"/><circle cx="16" cy="17" r="6" fill="P"/><circle cx="24" cy="17" r="6" fill="S"/><circle cx="20" cy="12" r="6" fill="T"/>',
+cheese:'<path d="M7 28V19L33 12v16z" fill="O"/><circle cx="16" cy="23" r="2.4" fill="K" opacity=".35"/><circle cx="25" cy="19" r="2" fill="K" opacity=".35"/><circle cx="27" cy="25" r="1.6" fill="K" opacity=".35"/>',
+egg:'<path d="M20 7c6 0 10 9 10 16a10 10 0 0 1-20 0c0-7 4-16 10-16z" fill="W" stroke="K" stroke-width="1.5"/><path d="M12 24a8 8 0 0 0 5 7" stroke="P" stroke-width="2" fill="none"/>',
+juice:'<path d="M10 12h20l-3 20H13z" fill="O"/><path d="M11 17h18" stroke="C" stroke-width="2"/><path d="M24 12l4-6" stroke="G" stroke-width="2.4" stroke-linecap="round"/><circle cx="20" cy="24" r="3" fill="R"/>',
+bike:'<circle cx="11" cy="26" r="6" fill="none" stroke="K" stroke-width="2.4"/><circle cx="29" cy="26" r="6" fill="none" stroke="K" stroke-width="2.4"/><path d="M11 26l6-10h9l3 10M17 16l5 10H11M24 12h5" stroke="R" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>',
+swim:'<circle cx="26" cy="13" r="3.5" fill="P"/><path d="M8 22q4-6 10-3l5 2" stroke="K" stroke-width="3" fill="none" stroke-linecap="round"/><path d="M7 29q3-3 6 0t6 0 6 0 6 0" stroke="S" stroke-width="2.6" fill="none"/>',
+heart:'<path d="M20 33C8 25 7 16 12 12.5c3-2 6-.5 8 2.5 2-3 5-4.5 8-2.5 5 3.5 4 12.5-8 20.5z" fill="R"/>',
+tooth:'<path d="M12 9c4-2 5 1 8 1s4-3 8-1c3 2 3 8 0 13-1 3-1 11-4 11s-2-7-4-7-1 7-4 7-3-8-4-11c-3-5-3-11 0-13z" fill="W" stroke="K" stroke-width="1.5"/>',
+mountain:'<path d="M5 31L16 12l7 11 4-6 8 14z" fill="S"/><path d="M13 18l3-6 3 5-3-1z" fill="C"/><circle cx="29" cy="12" r="3" fill="O"/>',
+ball:'<circle cx="20" cy="20" r="12" fill="W" stroke="K" stroke-width="1.6"/><path d="M20 14l5 4-2 6h-6l-2-6z" fill="K"/><path d="M20 8v6M25 18l7-2M23 24l4 6M17 24l-4 6M15 18L8 16" stroke="K" stroke-width="1.4"/>',
+mat:'<rect x="8" y="14" width="24" height="14" rx="3" fill="T"/><circle cx="12" cy="21" r="5" fill="G"/><circle cx="12" cy="21" r="2" fill="T"/>',
+home:'<path d="M6 20L20 8l14 12z" fill="R"/><rect x="10" y="20" width="20" height="13" fill="O"/><rect x="17" y="24" width="6" height="9" fill="M"/>',
+plant:'<path d="M12 25h16l-2 9H14z" fill="R"/><path d="M20 25V14M20 20c-5 0-8-3-8-7 5 0 8 3 8 7zM20 17c4 0 7-3 7-6-4 0-7 2-7 6z" fill="G" stroke="G" stroke-width="2"/>',
+shirt:'<path d="M14 9l-8 6 4 5 4-2v15h12V18l4 2 4-5-8-6c-1 3-3 4-6 4s-5-1-6-4z" fill="S"/>',
+cart:'<path d="M5 9h5l4 15h16l3-11H12" stroke="K" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="16" cy="30" r="2.6" fill="R"/><circle cx="28" cy="30" r="2.6" fill="R"/><path d="M14 17h18" stroke="O" stroke-width="3"/>',
+calendar:'<rect x="8" y="10" width="24" height="23" rx="2" fill="W" stroke="K" stroke-width="1.6"/><rect x="8" y="10" width="24" height="7" fill="R"/><path d="M14 8v5M26 8v5" stroke="K" stroke-width="2.4" stroke-linecap="round"/><path d="M13 22h4M19 22h4M25 22h2M13 28h4M19 28h4" stroke="K" stroke-width="2"/>',
+clock:'<circle cx="20" cy="20" r="12" fill="W" stroke="K" stroke-width="2"/><path d="M20 12v8l5 3" stroke="R" stroke-width="2.4" fill="none" stroke-linecap="round"/>',
+wrench:'<path d="M27 8a6 6 0 0 0-6 8L9 28a3 3 0 0 0 4 4l12-12a6 6 0 0 0 8-6l-4 3-4-1-1-4z" fill="S"/>',
+camera:'<rect x="6" y="14" width="28" height="18" rx="3" fill="K"/><rect x="13" y="10" width="9" height="5" fill="K"/><circle cx="20" cy="23" r="6.5" fill="S"/><circle cx="20" cy="23" r="3" fill="K"/><circle cx="29" cy="18" r="1.4" fill="O"/>',
+brush:'<path d="M28 7l5 5-13 13-5-5z" fill="O"/><path d="M15 20l5 5c0 5-4 8-10 8 1-4 0-7 5-13z" fill="R"/>',
+guitar:'<path d="M26 8l6 6-3 2-5-5z" fill="K"/><path d="M24 12L17 19" stroke="K" stroke-width="3"/><path d="M17 17c-5-1-9 3-8 8s6 8 10 6 5-6 3-9c-2-1-2-2-1-3z" fill="O"/><circle cx="16" cy="25" r="2.4" fill="K"/>',
+mic:'<rect x="15" y="7" width="10" height="16" rx="5" fill="K"/><path d="M11 20a9 9 0 0 0 18 0M20 29v5M15 34h10" stroke="K" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M17 12h6M17 16h6" stroke="C" stroke-width="1.4"/>',
+puzzle:'<path d="M8 14h8a3 3 0 1 1 6 0h8v8a3 3 0 1 0 0 6v6H8z" fill="T"/>',
+mask:'<path d="M7 11q13 4 26 0v10c0 8-6 13-13 13S7 29 7 21z" fill="P"/><path d="M12 18q3-2 6 0M22 18q3-2 6 0M14 26q6 5 12 0" stroke="K" stroke-width="2.4" fill="none" stroke-linecap="round"/>',
+laptop:'<rect x="9" y="11" width="22" height="15" rx="1.5" fill="K"/><rect x="11" y="13" width="18" height="11" fill="S"/><path d="M5 29h30l-3 3H8z" fill="K"/>',
+plane:'<path d="M5 22l30-13-8 24-8-9-8 3z" fill="S"/><path d="M19 24l16-15" stroke="C" stroke-width="1.6"/>',
+case:'<rect x="7" y="14" width="26" height="18" rx="3" fill="R"/><path d="M15 14v-3a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v3" stroke="K" stroke-width="2.4" fill="none"/><path d="M7 22h26" stroke="K" stroke-width="1.6"/><rect x="18" y="20" width="4" height="4" fill="O"/>',
+tent:'<path d="M5 32L20 9l15 23z" fill="O"/><path d="M20 9l-5 23h10z" fill="R"/><path d="M5 32h30" stroke="K" stroke-width="2"/>',
+rain:'<path d="M12 22a6 6 0 0 1 1-12 8 8 0 0 1 15 2 5 5 0 0 1 0 10z" fill="S"/><path d="M14 27l-2 5M21 27l-2 5M28 27l-2 5" stroke="T" stroke-width="2.4" stroke-linecap="round"/>',
+leaf:'<path d="M9 31C8 17 17 8 32 8c1 15-7 24-21 24z" fill="G"/><path d="M9 31L24 16" stroke="M" stroke-width="2"/>',
+cat:'<path d="M8 8l7 6h10l7-6v16c0 6-6 10-12 10S8 30 8 24z" fill="K"/><circle cx="15" cy="21" r="2" fill="S"/><circle cx="25" cy="21" r="2" fill="S"/><path d="M18 26h4l-2 2z" fill="P"/>',
+dog:'<path d="M12 10c-4 0-6 6-5 11 1 3 3 3 4 1l1-7zM28 10c4 0 6 6 5 11-1 3-3 3-4 1l-1-7z" fill="M"/><ellipse cx="20" cy="22" rx="9" ry="11" fill="O"/><circle cx="16" cy="19" r="1.8" fill="K"/><circle cx="24" cy="19" r="1.8" fill="K"/><ellipse cx="20" cy="26" rx="3.4" ry="2.4" fill="K"/>',
+fish:'<path d="M6 20c6-9 16-9 22 0-6 9-16 9-22 0z" fill="S"/><path d="M28 20l7-6v12z" fill="S"/><circle cx="14" cy="18" r="1.6" fill="K"/><path d="M19 15q2 5 0 10" stroke="C" stroke-width="1.6" fill="none"/>',
+target:'<circle cx="20" cy="20" r="12" fill="R"/><circle cx="20" cy="20" r="8" fill="C"/><circle cx="20" cy="20" r="4" fill="R"/><path d="M20 20L31 9" stroke="K" stroke-width="2"/>',
+trophy:'<path d="M12 8h16v8a8 8 0 0 1-16 0z" fill="O"/><path d="M12 11H7c0 6 3 8 6 8M28 11h5c0 6-3 8-6 8" stroke="O" stroke-width="2.4" fill="none"/><rect x="18" y="23" width="4" height="6" fill="O"/><rect x="13" y="29" width="14" height="4" fill="K"/>',
+flag:'<path d="M12 8v26" stroke="K" stroke-width="2.6" stroke-linecap="round"/><path d="M12 9h19l-5 6 5 6H12z" fill="R"/>',
+key:'<circle cx="14" cy="15" r="6" fill="O"/><circle cx="14" cy="15" r="2.2" fill="C"/><path d="M18 19l14 14M26 27l4-4M30 31l3-3" stroke="O" stroke-width="3" stroke-linecap="round"/>',
+gift:'<rect x="8" y="17" width="24" height="16" fill="R"/><rect x="6" y="13" width="28" height="6" fill="P"/><rect x="18" y="13" width="4" height="20" fill="O"/><path d="M20 13c-6-6-10 0-5 1zM20 13c6-6 10 0 5 1z" fill="O"/>',
+balloon:'<ellipse cx="20" cy="16" rx="9" ry="11" fill="R"/><path d="M20 27l-2 3h4z" fill="R"/><path d="M20 30q-3 3 0 6" stroke="K" stroke-width="1.6" fill="none"/><path d="M15 12q1-3 4-3" stroke="C" stroke-width="1.8" fill="none" stroke-linecap="round"/>',
+fire:'<path d="M20 6c1 6 9 9 9 18a9 9 0 0 1-18 0c0-4 2-6 3-8 1 3 2 4 4 4-1-5-1-9 2-14z" fill="R"/><path d="M20 22c3 3 5 4 5 8a5 5 0 0 1-10 0c0-3 2-4 5-8z" fill="O"/>',
+rocket:'<path d="M20 5c6 4 8 12 7 20H13c-1-8 1-16 7-20z" fill="W" stroke="K" stroke-width="1.6"/><circle cx="20" cy="16" r="3" fill="S"/><path d="M13 22l-5 7 6-1zM27 22l5 7-6-1z" fill="R"/><path d="M17 28q3 8 6 0z" fill="O"/>',
+umbrella:'<path d="M6 21a14 14 0 0 1 28 0z" fill="R"/><path d="M20 21v10a3 3 0 0 1-6 0" stroke="K" stroke-width="2.4" fill="none" stroke-linecap="round"/>',
+bell:'<path d="M20 7c-6 0-9 5-9 11 0 5-2 7-3 9h24c-1-2-3-4-3-9 0-6-3-11-9-11z" fill="O"/><circle cx="20" cy="31" r="3" fill="K"/>',
+lock:'<path d="M13 18v-4a7 7 0 0 1 14 0v4" stroke="K" stroke-width="3" fill="none"/><rect x="9" y="18" width="22" height="15" rx="2.5" fill="O"/><circle cx="20" cy="25" r="2.4" fill="K"/>',
+glasses:'<circle cx="12" cy="23" r="6" fill="S" stroke="K" stroke-width="2.4"/><circle cx="28" cy="23" r="6" fill="S" stroke="K" stroke-width="2.4"/><path d="M18 22q2-2 4 0M6 21l-2-5M34 21l2-5" stroke="K" stroke-width="2.4" fill="none" stroke-linecap="round"/>',
+candle:'<rect x="15" y="17" width="10" height="16" rx="1.5" fill="W" stroke="K" stroke-width="1.4"/><path d="M20 8c3 3 3 6 0 7-3-1-3-4 0-7z" fill="O"/><path d="M20 15v3" stroke="K" stroke-width="1.6"/>',
+bird:'<ellipse cx="18" cy="22" rx="9" ry="7" fill="K"/><circle cx="27" cy="16" r="5" fill="K"/><path d="M31 15l4 2-4 2z" fill="O"/><circle cx="28" cy="15" r="1.2" fill="R"/><path d="M9 20l-4-2 1 6z" fill="K"/><path d="M15 22q3 3 7 0" stroke="C" stroke-width="1.5" fill="none"/>',
+snow:'<path d="M20 7v26M9 13.5l22 13M9 26.5l22-13" stroke="S" stroke-width="2.6" stroke-linecap="round"/><path d="M16 9l4 3 4-3M16 31l4-3 4 3" stroke="S" stroke-width="2" fill="none"/>',
+butterfly:'<path d="M20 20C14 8 6 10 8 18c1 5 7 5 12 2zM20 20C26 8 34 10 32 18c-1 5-7 5-12 2z" fill="P"/><path d="M20 21C14 24 10 33 15 32c4-1 5-6 5-11zM20 21c6 3 10 12 5 11-4-1-5-6-5-11z" fill="S"/><path d="M20 15v14" stroke="K" stroke-width="2.4" stroke-linecap="round"/>'};
+function tok(s){return s.replace(/(fill|stroke)="([A-Z])"/g,function(m,a,b){return a+'="'+PL[b]+'"'})}
+function ib(id){return '<circle cx="20" cy="20" r="18" fill="#EAE4D6" stroke="#1D1A22" stroke-width="2.5"/>'+tok(IC[id]||IC.star)}
+function ic(id){return '<svg viewBox="0 0 40 40" aria-hidden="true">'+ib(id)+'</svg>'}
+function ci(id){return '<span class="ci">'+ic(id)+'</span>'}
+var MN=['star','cash','coins','piggy','wallet','bag','card','gem'],SK=['back','daily','diary'];
+var ICL=MN.concat(Object.keys(IC).filter(function(k){return MN.indexOf(k)<0&&SK.indexOf(k)<0}));
+var Q={
+ro:["Am mâncat sănătos azi?","M-am mișcat azi?","Cât de bine am dormit?","Am băut destulă apă?","Am citit azi?","M-am plimbat azi?","Am văzut un film?","Am făcut sport?","Am scris azi?","Am meditat sau respirat adânc?","Am făcut stretching sau yoga?","Mi-am luat vitaminele?","Mi-am făcut rutina de îngrijire?","Am gătit acasă?","Am făcut ordine?","Am învățat ceva nou?","Am exersat o limbă străină?","Am lucrat la un proiect creativ?","Am desenat?","Am ascultat muzică?","Am vorbit cu un prieten?","Am fost afară la aer curat?","Am stat mai puțin pe telefon?","M-am culcat la timp?","Am notat un lucru bun din zi?","Cum mi-a fost starea azi?","Cât de multă energie am avut?","Am mâncat fructe sau legume?","Am evitat fumatul azi?","Mi-am notat cheltuielile?"],
+en:["Did I eat well today?","Did I move today?","How well did I sleep?","Did I drink enough water?","Did I read today?","Did I go for a walk?","Did I watch a film?","Did I do sport?","Did I write today?","Did I meditate or breathe deeply?","Did I stretch or do yoga?","Did I take my vitamins?","Did I do my skincare?","Did I cook at home?","Did I tidy up?","Did I learn something new?","Did I practise a foreign language?","Did I work on a creative project?","Did I draw?","Did I listen to music?","Did I talk to a friend?","Was I outside in fresh air?","Did I spend less time on my phone?","Did I go to bed on time?","Did I note one good thing?","How was my mood today?","How much energy did I have?","Did I eat fruit or vegetables?","Did I avoid smoking today?","Did I log my spending?"],
+fr:["Ai-je bien mangé aujourd'hui ?","Ai-je bougé aujourd'hui ?","Comment ai-je dormi ?","Ai-je assez bu d'eau ?","Ai-je lu aujourd'hui ?","Suis-je allée me promener ?","Ai-je regardé un film ?","Ai-je fait du sport ?","Ai-je écrit aujourd'hui ?","Ai-je médité ou respiré profondément ?","Ai-je fait des étirements ou du yoga ?","Ai-je pris mes vitamines ?","Ai-je pris soin de ma peau ?","Ai-je cuisiné à la maison ?","Ai-je rangé ?","Ai-je appris quelque chose ?","Ai-je pratiqué une langue étrangère ?","Ai-je travaillé sur un projet créatif ?","Ai-je dessiné ?","Ai-je écouté de la musique ?","Ai-je parlé à un ami ?","Suis-je sortie prendre l'air ?","Ai-je moins utilisé mon téléphone ?","Me suis-je couchée à l'heure ?","Ai-je noté une bonne chose ?","Comment était mon humeur ?","Quelle énergie ai-je eue ?","Ai-je mangé des fruits ou légumes ?","Ai-je évité de fumer ?","Ai-je noté mes dépenses ?"]};
+var TT={
+ro:["Ioana mănâncă sănătos","Ioana se mișcă","Ioana doarme bine","Ioana se hidratează","Ioana citește","Ioana se plimbă","Ioana vede filme","Ioana face sport","Ioana scrie","Ioana își face liniște","Ioana se întinde","Ioana are grijă de ea","Ioana se alintă","Ioana gătește","Ioana face ordine","Ioana învață","Ioana vorbește limbi","Ioana creează","Ioana desenează","Ioana ascultă muzică","Ioana ține legătura","Ioana ia aer","Ioana lasă telefonul","Ioana se culcă la timp","Ioana e recunoscătoare","Ioana se simte bine","Ioana are energie","Ioana mănâncă fructe","Ioana nu fumează","Ioana își ține bugetul"],
+en:["Ioana eats well","Ioana moves","Ioana sleeps well","Ioana stays hydrated","Ioana reads","Ioana goes for walks","Ioana watches films","Ioana does sport","Ioana writes","Ioana finds calm","Ioana stretches","Ioana looks after herself","Ioana pampers herself","Ioana cooks","Ioana tidies up","Ioana learns","Ioana speaks languages","Ioana creates","Ioana draws","Ioana listens to music","Ioana keeps in touch","Ioana gets fresh air","Ioana puts the phone down","Ioana goes to bed on time","Ioana is grateful","Ioana feels good","Ioana has energy","Ioana eats fruit","Ioana doesn't smoke","Ioana keeps her budget"],
+fr:["Ioana mange bien","Ioana bouge","Ioana dort bien","Ioana s'hydrate","Ioana lit","Ioana se promène","Ioana regarde des films","Ioana fait du sport","Ioana écrit","Ioana trouve le calme","Ioana s'étire","Ioana prend soin d'elle","Ioana se chouchoute","Ioana cuisine","Ioana range","Ioana apprend","Ioana parle des langues","Ioana crée","Ioana dessine","Ioana écoute de la musique","Ioana garde le contact","Ioana prend l'air","Ioana lâche son téléphone","Ioana se couche à l'heure","Ioana est reconnaissante","Ioana se sent bien","Ioana a de l'énergie","Ioana mange des fruits","Ioana ne fume pas","Ioana tient son budget"]};
+var U={
+ro:{app:"Habit tracker",today:"Azi",prog:"Progres",hist:"Istoric",edit:"Editează",yes:"Da",no:"Nu",td:"Azi",yd:"Ieri",empty:"Nu ai niciun obicei ales. Mergi la Editează și alege ce vrei să urmărești.",pv:"Ziua dinainte",nx:"Ziua următoare",got:"Deblocat, ai primit",of:"din",row:"la rând",tot:"în total",dd:"zile completate",he:"Aici apar zilele pe care le completezi.",open:"Deschide",an:"Personajul tău",track:"Ce vrei să urmărești?",own:"Adaugă al tău",phq:"Întrebarea (ex. Am făcut pian?)",pht:"Numele insignei (ex. Ioana cântă la pian)",oy:"Răspuns Da / Nu",or:"Notă de la 1 la 5",add:"Adaugă",reset:"Șterge tot și o iau de la capăt",sure:"Sigur? Apasă încă o dată",after:"Insigna după",d:"zile",tl:"Insignă",newT:"Insignă nouă!",recv:"Ai primit",ok:"Super!",bkT:"Ioana se ridică din nou",bkH:"Revii cu un „da” după o zi grea, când ai avut deja 3 zile bune",dyT:"Ioana revine zilnic",dyH:"7 zile în care ai completat check-in-ul",jr:"Jurnal zilnic",jrs:"Câteva cuvinte despre azi, pe prima pagină",jph:"Câteva cuvinte despre azi...",wd:"cuvinte",arr:"Aranjează",done:"Gata",hint:"Trage insignele oriunde pe personaj sau în cameră. Schimbă ordinea din listă cu săgețile.",pl:"Plasează-l",choose:"Alege o iconiță",close:"Închide",up:"Mai sus",dn:"Mai jos",prof:"Despre tine",nameL:"Numele tău",gf:"Formulări la feminin",gm:"Formulări la masculin",keep:"Insignele câștigate rămân chiar dacă oprești un obicei.",bk:"Copie de siguranță",bkc:"Copiază",bkr:"Restaurează",bkh:"Copiază textul și păstrează-l într-o notiță. Ca să restaurezi, lipește-l mai jos.",bkph:"Lipește aici copia de siguranță",bkok:"Copiat. Lipește-l într-o notiță.",bkman:"Selectează textul de mai jos și copiază-l.",bkdone:"Datele au fost restaurate.",bkerr:"Textul nu este o copie de siguranță validă.",bks:"Sigur? Înlocuiește datele de acum. Apasă încă o dată."},
+en:{app:"Habit tracker",today:"Today",prog:"Progress",hist:"History",edit:"Edit",yes:"Yes",no:"No",td:"Today",yd:"Yesterday",empty:"No habits selected. Go to Edit and pick what you want to track.",pv:"Previous day",nx:"Next day",got:"Unlocked, you got",of:"of",row:"in a row",tot:"in total",dd:"days completed",he:"The days you fill in will show up here.",open:"Open",an:"Your persona",track:"What do you want to track?",own:"Add your own",phq:"The question (e.g. Did I play piano?)",pht:"Badge name (e.g. Ioana plays piano)",oy:"Yes / No answer",or:"Rating from 1 to 5",add:"Add",reset:"Erase everything and start over",sure:"Sure? Tap once more",after:"Badge after",d:"days",tl:"Badge",newT:"New badge!",recv:"You got",ok:"Great!",bkT:"Ioana gets back up",bkH:"You say yes again after a rough day, once you had 3 good days",dyT:"Ioana shows up daily",dyH:"7 days with a completed check-in",jr:"Daily diary",jrs:"A few words about today, on the first page",jph:"A few words about today...",wd:"words",arr:"Arrange",done:"Done",hint:"Drag the badges anywhere on your persona or around the room. Reorder the list with the arrows.",pl:"Place it",choose:"Choose an icon",close:"Close",up:"Move up",dn:"Move down",prof:"About you",nameL:"Your name",gf:"She / her wording",gm:"He / him wording",keep:"Badges you earned stay even if you turn a habit off.",bk:"Backup",bkc:"Copy",bkr:"Restore",bkh:"Copy the text and keep it in a note. To restore, paste it below.",bkph:"Paste your backup here",bkok:"Copied. Paste it into a note.",bkman:"Select the text below and copy it.",bkdone:"Data restored.",bkerr:"That text is not a valid backup.",bks:"Sure? This replaces your current data. Tap again."},
+fr:{app:"Habit tracker",today:"Aujourd'hui",prog:"Progrès",hist:"Historique",edit:"Éditer",yes:"Oui",no:"Non",td:"Aujourd'hui",yd:"Hier",empty:"Aucune habitude choisie. Va dans Éditer et choisis ce que tu veux suivre.",pv:"Jour précédent",nx:"Jour suivant",got:"Débloqué, tu as reçu",of:"sur",row:"d'affilée",tot:"au total",dd:"jours complétés",he:"Les jours que tu remplis apparaîtront ici.",open:"Ouvrir",an:"Ton personnage",track:"Que veux-tu suivre ?",own:"Ajoute la tienne",phq:"La question (ex. Ai-je joué du piano ?)",pht:"Nom du badge (ex. Ioana joue du piano)",oy:"Réponse Oui / Non",or:"Note de 1 à 5",add:"Ajouter",reset:"Tout effacer et recommencer",sure:"Sûre ? Appuie encore une fois",after:"Badge après",d:"jours",tl:"Badge",newT:"Nouveau badge !",recv:"Tu as reçu",ok:"Super !",bkT:"Ioana se relève",bkH:"Tu redis oui après une journée difficile, après 3 bonnes journées",dyT:"Ioana est au rendez-vous",dyH:"7 jours avec un check-in complété",jr:"Journal quotidien",jrs:"Quelques mots sur la journée, sur la première page",jph:"Quelques mots sur aujourd'hui...",wd:"mots",arr:"Arranger",done:"Terminé",hint:"Fais glisser les badges où tu veux, sur ton personnage ou dans la pièce. Change l'ordre de la liste avec les flèches.",pl:"Le placer",choose:"Choisir une icône",close:"Fermer",up:"Monter",dn:"Descendre",prof:"À propos de toi",nameL:"Ton prénom",gf:"Formulations au féminin",gm:"Formulations au masculin",keep:"Les badges gagnés restent même si tu désactives une habitude.",bk:"Sauvegarde",bkc:"Copier",bkr:"Restaurer",bkh:"Copie le texte et garde-le dans une note. Pour restaurer, colle-le ci-dessous.",bkph:"Colle ta sauvegarde ici",bkok:"Copié. Colle-le dans une note.",bkman:"Sélectionne le texte ci-dessous et copie-le.",bkdone:"Données restaurées.",bkerr:"Ce texte n'est pas une sauvegarde valide.",bks:"Sûr ? Cela remplace tes données actuelles. Appuie encore."}};
+var NM={ro:{cat:"Pisică",turtle:"Țestoasă",bird:"Păsărică",unicorn:"Unicorn",monkey:"Maimuță",dragon:"Dragon",bunny:"Iepuraș",fox:"Vulpe",panda:"Panda",frog:"Broscuță"},en:{cat:"Cat",turtle:"Turtle",bird:"Bird",unicorn:"Unicorn",monkey:"Monkey",dragon:"Dragon",bunny:"Bunny",fox:"Fox",panda:"Panda",frog:"Frog"},fr:{cat:"Chat",turtle:"Tortue",bird:"Oiseau",unicorn:"Licorne",monkey:"Singe",dragon:"Dragon",bunny:"Lapin",fox:"Renard",panda:"Panda",frog:"Grenouille"}};
+var LC={ro:'ro-RO',en:'en-GB',fr:'fr-FR'};
+var AN={
+cat:['#26212B','<path d="M46 74L50 24L90 54Z" fill="@"/><path d="M154 74L150 24L110 54Z" fill="@"/><path d="M56 62L58 38L76 54Z" fill="#D98E92"/><path d="M144 62L142 38L124 54Z" fill="#D98E92"/>','','<path d="M95 112h10l-5 6z" fill="#D98E92"/><path d="M62 112l-26-6M62 118l-26 4M138 112l26-6M138 118l26 4" stroke="#EAE4D6" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>',{e:'#7FB0E0',mc:'#EAE4D6',bg:'#8FA6C4',bd:'#E3A3A6'}],
+turtle:['#9DB38A','','<ellipse cx="100" cy="122" rx="32" ry="22" fill="#B9CBA6"/>','',{bg:'#C58B4E',bd:'#4E6E5A',bp:'<path d="M72 152Q100 138 128 152M100 140V210M80 208L90 152M120 208L110 152" stroke="#2F4A3A" stroke-width="3" fill="none"/>'}],
+bird:['#9AA0A8','<ellipse cx="46" cy="116" rx="18" ry="30" fill="#6F757E" transform="rotate(14 46 116)"/><ellipse cx="154" cy="116" rx="18" ry="30" fill="#6F757E" transform="rotate(-14 154 116)"/><path d="M92 52Q88 22 80 20M100 50V14M108 52Q112 22 120 20" stroke="@" stroke-width="7" fill="none" stroke-linecap="round"/>','','<path d="M88 112h24l-12 18z" fill="#2A2530"/>',{e:'#C8382E',m:1,bg:'#B8443B',bd:'#E7E3DA',bp:'<g fill="#2A2530"><circle cx="86" cy="150" r="2.5"/><circle cx="108" cy="162" r="2.5"/><circle cx="124" cy="146" r="2.5"/><circle cx="96" cy="184" r="2.5"/><circle cx="116" cy="190" r="2.5"/></g>'}],
+unicorn:['#EDE4EC','<circle cx="152" cy="70" r="16" fill="#D98E92"/><circle cx="162" cy="100" r="17" fill="#7194AD"/><circle cx="158" cy="132" r="16" fill="#8DA27E"/><path d="M52 66L56 36L82 52Z" fill="@"/><path d="M148 66L144 36L118 52Z" fill="@"/>','','<path d="M90 56L100 8L110 56Z" fill="#D9A843"/><path d="M93 42l14-6M92 50l16-6" stroke="#B8832A" stroke-width="3"/><path d="M60 62Q70 40 92 54" stroke="#D98E92" stroke-width="6" fill="none" stroke-linecap="round"/>',{bg:'#5B8F8A',bd:'#7194AD'}],
+monkey:['#8A5A3C','<circle cx="40" cy="104" r="20" fill="@"/><circle cx="160" cy="104" r="20" fill="@"/><circle cx="40" cy="104" r="11" fill="#D8B48A"/><circle cx="160" cy="104" r="11" fill="#D8B48A"/>','<ellipse cx="100" cy="122" rx="42" ry="34" fill="#D8B48A"/><ellipse cx="78" cy="102" rx="16" ry="14" fill="#D8B48A"/><ellipse cx="122" cy="102" rx="16" ry="14" fill="#D8B48A"/>','<ellipse cx="94" cy="114" rx="2.5" ry="2" fill="#1D1A22"/><ellipse cx="106" cy="114" rx="2.5" ry="2" fill="#1D1A22"/>',{bg:'#D98E92',bd:'#35506B'}],
+dragon:['#6C4A5E','<path d="M40 90L6 56 14 104 36 118Z" fill="#4A2F40"/><path d="M160 90L194 56 186 104 164 118Z" fill="#4A2F40"/><path d="M60 62L52 30 80 50Z" fill="#E8C34E"/><path d="M140 62L148 30 120 50Z" fill="#E8C34E"/>','','<ellipse cx="94" cy="114" rx="2.5" ry="2" fill="#EAE4D6"/><ellipse cx="106" cy="114" rx="2.5" ry="2" fill="#EAE4D6"/><path d="M84 50L90 36 96 50M104 50L110 36 116 50" fill="#E8C34E"/>',{e:'#E8C34E',mc:'#EAE4D6',bg:'#7C8F6E',bd:'#5A3C4E'}],
+bunny:['#EBE3DA','<ellipse cx="74" cy="38" rx="14" ry="38" fill="@"/><ellipse cx="126" cy="38" rx="14" ry="38" fill="@"/><ellipse cx="74" cy="40" rx="7" ry="26" fill="#D98E92"/><ellipse cx="126" cy="40" rx="7" ry="26" fill="#D98E92"/>','','<path d="M95 112h10l-5 6z" fill="#D98E92"/><rect x="95" y="128" width="10" height="11" rx="3" fill="#fff" stroke="#1D1A22" stroke-width="2"/>',{bg:'#D2A04C',bd:'#B8443B'}],
+fox:['#C4673A','<path d="M46 74L50 24L90 54Z" fill="@"/><path d="M154 74L150 24L110 54Z" fill="@"/><path d="M56 62L58 38L76 54Z" fill="#26212B"/><path d="M144 62L142 38L124 54Z" fill="#26212B"/>','<path d="M38 118Q100 200 162 118Q100 142 38 118Z" fill="#EFE8DC"/>','<ellipse cx="100" cy="114" rx="6" ry="5" fill="#1D1A22"/>',{bg:'#6E8FA8',bd:'#EAE4D6'}],
+panda:['#EDE9E0','<circle cx="54" cy="58" r="20" fill="#26212B"/><circle cx="146" cy="58" r="20" fill="#26212B"/>','<ellipse cx="78" cy="102" rx="14" ry="18" fill="#26212B" transform="rotate(20 78 102)"/><ellipse cx="122" cy="102" rx="14" ry="18" fill="#26212B" transform="rotate(-20 122 102)"/>','<ellipse cx="100" cy="114" rx="7" ry="5" fill="#26212B"/>',{e:'#EDE9E0',h:'#1D1A22',bg:'#6C4A5E',bd:'#D9A843'}],
+frog:['#8DA27E','<circle cx="68" cy="60" r="22" fill="@"/><circle cx="132" cy="60" r="22" fill="@"/>','','<circle cx="68" cy="60" r="13" fill="#EDE9E0"/><circle cx="132" cy="60" r="13" fill="#EDE9E0"/><circle cx="70" cy="60" r="7" fill="#1D1A22"/><circle cx="130" cy="60" r="7" fill="#1D1A22"/>',{n:1,bg:'#C5776B',bd:'#EDE4D0'}]};
+var SL=[[26,58],[174,58],[22,118],[178,118],[26,178],[174,178],[34,234],[166,234],[22,22],[178,22]];
+function av(k,items){
+ var a=AN[k]||AN.cat,o=a[4],c=a[0],I='#1D1A22',E=o.e||I,f=function(s){return s.replace(/@/g,c)};
+ var s='<svg viewBox="0 0 200 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Avatar"><rect width="200" height="260" fill="'+o.bg+'"/><rect y="226" width="200" height="34" fill="#000" opacity=".16"/><ellipse cx="100" cy="238" rx="46" ry="5" fill="#000" opacity=".2"/>';
+ s+='<path d="M88 200V236M112 200V236" stroke="'+I+'" stroke-width="7" stroke-linecap="round"/><ellipse cx="84" cy="238" rx="10" ry="4.5" fill="'+I+'"/><ellipse cx="116" cy="238" rx="10" ry="4.5" fill="'+I+'"/>';
+ s+='<path d="M80 126L56 180M120 126L144 180" stroke="'+o.bd+'" stroke-width="12" stroke-linecap="round"/><path d="M78 112Q100 104 122 112L144 208Q100 220 56 208Z" fill="'+o.bd+'"/>'+(o.bp||'');
+ s+='<circle cx="56" cy="182" r="7" fill="'+c+'"/><circle cx="144" cy="182" r="7" fill="'+c+'"/>';
+ s+='<g transform="translate(38 7) scale(.62)">'+f(a[1])+'<ellipse cx="100" cy="112" rx="62" ry="64" fill="'+c+'"/>'+f(a[2]);
+ if(!o.n)s+='<circle cx="78" cy="102" r="6" fill="'+E+'"/><circle cx="122" cy="102" r="6" fill="'+E+'"/>'+(o.h?'<circle cx="78" cy="102" r="2.5" fill="'+o.h+'"/><circle cx="122" cy="102" r="2.5" fill="'+o.h+'"/>':'');
+ s+='<ellipse cx="60" cy="124" rx="8" ry="5" fill="#D98E92" opacity=".55"/><ellipse cx="140" cy="124" rx="8" ry="5" fill="#D98E92" opacity=".55"/>';
+ if(!o.m)s+='<path d="M90 123Q100 131 110 123" stroke="'+(o.mc||I)+'" stroke-width="4" fill="none" stroke-linecap="round"/>';
+ s+=f(a[3])+'</g>';
+ (items||[]).forEach(function(e){s+='<g class="it" data-id="'+e.id+'" transform="translate('+(e.x-18)+' '+(e.y-18)+') scale(.9)">'+ib(e.em)+'</g>'});
+ return s+'</svg>'}
+function cv(k,items,ar){return '<div class="cv'+(ar?' arr':'')+'">'+av(k,items)+'</div>'}
+var S={lang:'ro',habits:['food','move','sleep'],animal:'cat',custom:[],cfg:{},data:{},earned:{},diary:{},diaryOn:true,pos:{},order:[],name:'Ioana',g:'f'};
+try{var r=localStorage.getItem(KEY)||localStorage.getItem('ioana-pas-cu-pas-v1');if(r){var j=JSON.parse(r);for(var k in j)S[k]=j[k]}}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function u(k){return gend((U[S.lang]||U.ro)[k])}
+function T(s){return s.replace(/Ioana/g,function(){return S.name})}
+function gend(s){if(S.g!='m')return s;[[/herself/g,'himself'],[/\bher\b/g,'his'],[/recunoscătoare/g,'recunoscător'],[/de ea\b/g,'de el'],[/allée/g,'allé'],[/couchée/g,'couché'],[/sortie\b/g,'sorti'],[/reconnaissante/g,'reconnaissant'],[/d'elle/g,'de lui'],[/Sûre/g,'Sûr']].forEach(function(r){s=s.replace(r[0],r[1])});return s}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function hs(){return LB.map(function(a,i){return{id:a[0],t:a[1],em:a[0],q:gend(Q[S.lang][i]),title:T(gend(TT[S.lang][i]))}}).concat(S.custom.map(function(a){return{id:a[0],q:a[1],t:a[2],em:a[3],title:a[4]}}))}
+function BN(){return[{id:'back',t:'b',em:'back',title:T(u('bkT')),how:u('bkH')},{id:'daily',t:'b',em:'daily',title:T(u('dyT')),how:u('dyH'),need:7}]}
+function byId(i){return hs().concat(BN()).filter(function(x){return x.id===i})[0]}
+function pad(n){return n<10?'0'+n:''+n}
+function fmt(d){return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())}
+function dn(d){var p=d.split('-');return Date.UTC(+p[0],+p[1]-1,+p[2])/864e5}
+var off=0,P='today',queue=[],armed=false,DA=[3,5,7,10,14,21,30,50,66,100],DR={},pick='star',AR=false,pickOpen=false,DG=null,BK='',BKM='',armedB=false;
+function vd(){var d=new Date();d.setDate(d.getDate()+off);return d}
+function ok(h,v){return h.t=='y'?v===1:v>=4}
+function cfg(h){var c=S.cfg[h.id]||{};return{days:c.days||(h.t=='y'?10:7),mode:c.mode||'s'}}
+function prog(h){
+ var ds=Object.keys(S.data).filter(function(d){var v=S.data[d][h.id];return v!==undefined&&ok(h,v)}).sort(),best=0,cur=0,prev=null,c=cfg(h);
+ ds.forEach(function(d){var n=dn(d);cur=(prev!==null&&n-prev===1)?cur+1:1;if(cur>best)best=cur;prev=n});
+ var t=new Date(),tn=Date.UTC(t.getFullYear(),t.getMonth(),t.getDate())/864e5,now=(prev!==null&&tn-prev<=1)?cur:0;
+ return c.mode=='s'?{n:now,done:best>=c.days,need:c.days}:{n:ds.length,done:ds.length>=c.days,need:c.days}}
+function comeback(){var ds=Object.keys(S.data).sort(),hh=hs();
+ for(var i=0;i<hh.length;i++){if(hh[i].t!='y')continue;var y=0,arm=false;
+  for(var j=0;j<ds.length;j++){var v=S.data[ds[j]][hh[i].id];if(v===1){if(arm)return true;y++}else if(v===0&&y>=3)arm=true}}
+ return false}
+function achieved(){var a=[];hs().forEach(function(h){if(prog(h).done)a.push(h.id)});
+ if(comeback())a.push('back');if(Object.keys(S.data).length>=7)a.push('daily');return a}
+function earnedItems(){var o=[];Object.keys(S.earned).forEach(function(i,n){var x=byId(i);if(!x)return;var p=S.pos[i]||[Math.min(182,SL[n%10][0]+Math.floor(n/10)*10),SL[n%10][1]];o.push({id:i,em:x.em,x:p[0],y:p[1]})});return o}
+function titleOrder(){var e=Object.keys(S.earned),o=S.order.filter(function(i){return e.indexOf(i)>-1});e.forEach(function(i){if(o.indexOf(i)<0)o.push(i)});return o.map(byId).filter(Boolean)}
+function dl(d){return d.toLocaleDateString(LC[S.lang],{weekday:'long',day:'numeric',month:'long'})}
+function wc(t){return (t.match(/\S+/g)||[]).length}
+function bt(id,v,l,s){return '<button data-a="ans" data-id="'+id+'" data-v="'+v+'"'+(s?' class="sel"':'')+'>'+l+'</button>'}
+function vToday(){
+ var d=vd(),dk=fmt(d),row=S.data[dk]||{},hh=hs().filter(function(h){return S.habits.indexOf(h.id)>-1});
+ var ord=titleOrder(),h='<section class="hero">'+cv(S.animal,earnedItems(),AR);
+ if(ord.length){h+='<button class="pill sm" data-a="arr">'+(AR?u('done'):u('arr'))+'</button>';if(AR)h+='<p class="hint">'+u('hint')+'</p>';
+  h+='<div class="tlw">'+ord.map(function(x,i){return '<div class="tl">'+ci(x.em)+'<span>'+esc(x.title)+'</span>'+(AR?'<span class="mv"><button data-a="up" data-i="'+i+'" aria-label="'+u('up')+'"'+(i?'':' disabled')+'>▲</button><button data-a="dn" data-i="'+i+'" aria-label="'+u('dn')+'"'+(i<ord.length-1?'':' disabled')+'>▼</button></span>':'')+'</div>'}).join('')+'</div>'}
+ h+='</section><section class="card"><div class="nav"><button data-a="pv" aria-label="'+u('pv')+'">‹</button><b>'+(off===0?u('td'):off===-1?u('yd'):dl(d))+'</b><button data-a="nx" aria-label="'+u('nx')+'"'+(off>=0?' disabled':'')+'>›</button></div>';
+ if(!hh.length)h+='<p class="sub">'+u('empty')+'</p>';
+ hh.forEach(function(x){h+='<div class="q"><p>'+ci(x.em)+' '+esc(x.q)+'</p><div class="opts">';
+  if(x.t=='y')h+=bt(x.id,1,u('yes'),row[x.id]===1)+bt(x.id,0,u('no'),row[x.id]===0);
+  else for(var n=1;n<=5;n++)h+=bt(x.id,n,n,row[x.id]===n);
+  h+='</div></div>'});
+ h+='</section>';
+ if(S.diaryOn){var tx=S.diary[dk]||'';h+='<section class="card"><textarea id="dr" rows="4" placeholder="'+u('jph')+'">'+esc(tx)+'</textarea><div class="wc" id="wc">'+wc(tx)+' / 1000 '+u('wd')+'</div></section>'}
+ return h}
+function vProg(){
+ var h='<section class="card"><h2>'+u('prog')+'</h2>';
+ hs().concat(BN()).forEach(function(x){
+  var isB=x.t=='b',on=S.habits.indexOf(x.id)>-1,done=!!S.earned[x.id];if(!(isB||on||done))return;
+  var sub,n,need;
+  if(isB){need=x.need||1;n=x.id=='back'?(comeback()?1:0):Object.keys(S.data).length;sub=done?u('got')+' '+ci(x.em):x.how}
+  else{var p=prog(x),c=cfg(x);need=p.need;n=p.n;sub=done?u('got')+' '+ci(x.em):need+' '+u('d')+' '+(c.mode=='s'?u('row'):u('tot'))}
+  h+='<div class="t '+(done?'done':'lock')+'"><div class="em">'+ic(x.em)+'</div><div class="tx"><b>'+esc(x.title)+'</b><small>'+sub+'</small>';
+  if(x.id!='back')h+='<div class="bar"><i style="width:'+(done?100:Math.min(100,Math.round(n/need*100)))+'%"></i></div><small>'+Math.min(n,need)+' '+u('of')+' '+need+'</small>';
+  h+='</div></div>'});
+ return h+'</section>'}
+function vHist(){
+ var set={};Object.keys(S.data).forEach(function(d){set[d]=1});Object.keys(S.diary).forEach(function(d){set[d]=1});
+ var ds=Object.keys(set).sort().reverse();
+ if(!ds.length)return '<section class="card"><h2>'+u('hist')+'</h2><p class="sub">'+u('he')+'</p></section>';
+ var h='<section class="card"><h2>'+u('hist')+'</h2><p class="sub">'+ds.length+' '+u('dd')+'</p></section>';
+ ds.forEach(function(d){var p=d.split('-'),dt=new Date(+p[0],+p[1]-1,+p[2]),row=S.data[d]||{},c='';
+  hs().forEach(function(x){var v=row[x.id];if(v===undefined)return;c+='<span class="chip'+(ok(x,v)?'':' no')+'">'+ci(x.em)+(x.t=='y'?(v?u('yes'):u('no')):v+'/5')+'</span>'});
+  h+='<section class="card day"><div class="top"><b>'+dl(dt)+'</b><button data-a="day" data-d="'+d+'">'+u('open')+'</button></div><div class="chips" style="justify-content:flex-start;margin:0">'+c+'</div>'+(S.diary[d]?'<p class="dtx">'+esc(S.diary[d])+'</p>':'')+'</section>'});
+ return h}
+function vEdit(){
+ var h='<section class="card"><h2>'+u('prof')+'</h2><div class="f"><input id="nm" maxlength="24" value="'+esc(S.name)+'" placeholder="'+u('nameL')+'" aria-label="'+u('nameL')+'"><select id="gn"><option value="f"'+(S.g=='m'?'':' selected')+'>'+u('gf')+'</option><option value="m"'+(S.g=='m'?' selected':'')+'>'+u('gm')+'</option></select></div></section><section class="card"><h2>'+u('an')+'</h2><div class="zoo">';
+ for(var k in AN)h+='<button data-a="an" data-k="'+k+'"'+(S.animal==k?' class="sel"':'')+'>'+av(k,[])+NM[S.lang][k]+'</button>';
+ h+='</div></section><section class="card"><button class="h'+(S.diaryOn?' on':'')+'" data-a="dtog"><span class="em">'+ic('diary')+'</span><span class="tx"><b>'+u('jr')+'</b><small>'+u('jrs')+'</small></span><span class="sw"></span></button></section>';
+ h+='<section class="card"><h2>'+u('track')+'</h2><p class="sub">'+u('keep')+'</p>';
+ hs().forEach(function(x){var on=S.habits.indexOf(x.id)>-1;
+  h+='<button class="h'+(on?' on':'')+'" data-a="tog" data-id="'+x.id+'"><span class="em">'+ic(x.em)+'</span><span class="tx"><b>'+esc(x.q)+'</b><small>'+u('tl')+': '+esc(x.title)+'</small></span><span class="sw"></span></button>';
+  if(on){var c=cfg(x);
+   h+='<div class="cfg">'+u('after')+' <select data-cfg="'+x.id+'" data-f="days" aria-label="'+u('after')+'">'+DA.map(function(n){return '<option'+(n==c.days?' selected':'')+'>'+n+'</option>'}).join('')+'</select> '+u('d')+' <select data-cfg="'+x.id+'" data-f="mode"><option value="s"'+(c.mode=='s'?' selected':'')+'>'+u('row')+'</option><option value="t"'+(c.mode=='t'?' selected':'')+'>'+u('tot')+'</option></select></div>'}});
+ h+='</section><section class="card"><h2>'+u('own')+'</h2><div class="f"><input id="nq" placeholder="'+u('phq')+'" value="'+esc(DR.q||'')+'"><input id="nt" placeholder="'+esc(T(u('pht')))+'" value="'+esc(DR.t||'')+'"><select id="ny"><option value="y"'+(DR.y=='r'?'':' selected')+'>'+u('oy')+'</option><option value="r"'+(DR.y=='r'?' selected':'')+'>'+u('or')+'</option></select><div class="ipv"><span class="em">'+ic(pick)+'</span><button class="pill sm0" data-a="ipk">'+(pickOpen?u('close'):u('choose'))+'</button></div>'+(pickOpen?'<div class="ig">'+ICL.map(function(i){return '<button data-a="pick" data-i="'+i+'" aria-label="'+i+'"'+(pick==i?' class="sel"':'')+'>'+ic(i)+'</button>'}).join('')+'</div>':'')+'<button class="pill" data-a="add">'+u('add')+'</button></div></section>';
+ h+='<section class="card"><h2>'+u('bk')+'</h2><p class="sub">'+u('bkh')+'</p><div class="f" style="margin-top:10px"><textarea id="bk" rows="3" style="min-height:70px" placeholder="'+u('bkph')+'">'+esc(BK)+'</textarea><div class="btns"><button class="pill sm0" data-a="bkc">'+u('bkc')+'</button><button class="pill sm0 alt" data-a="bkr">'+u('bkr')+'</button></div>'+(BKM?'<p class="sub">'+esc(BKM)+'</p>':'')+'</div></section>';
+ return h+'<button class="link" data-a="reset">'+(armed?u('sure'):u('reset'))+'</button>'}
+function draw(){
+ document.documentElement.lang=S.lang;
+ document.getElementById('hd').innerHTML='<span class="logo">'+u('app')+'</span><div class="lg">'+['ro','en','fr'].map(function(l){return '<button data-a="lang" data-l="'+l+'"'+(S.lang==l?' class="on"':'')+'>'+l.toUpperCase()+'</button>'}).join('')+'</div>';
+ document.getElementById('app').innerHTML={today:vToday,prog:vProg,hist:vHist,edit:vEdit}[P]();
+ document.getElementById('tabs').innerHTML=['today','prog','hist','edit'].map(function(t){return '<button data-a="tab" data-p="'+t+'"'+(P==t?' class="on"':'')+'>'+u(t)+'</button>'}).join('')}
+function modal(){
+ var m=document.getElementById('modal');if(!queue.length){m.innerHTML='';return}
+ var x=byId(queue[0]);
+ m.innerHTML='<div class="ov"><div class="box">'+cv(S.animal,earnedItems())+'<h3>'+esc(x.title)+'</h3><p>'+u('newT')+' '+u('recv')+': '+ci(x.em)+'</p><div class="btns"><button class="pill" data-a="ok" id="ok">'+u('ok')+'</button><button class="pill alt" data-a="place">'+u('pl')+'</button></div></div></div>';
+ document.getElementById('ok').focus()}
+document.addEventListener('click',function(e){
+ var t=e.target.closest('[data-a]');if(!t)return;var a=t.dataset.a,d=t.dataset;
+ if(a=='tab'){P=d.p;armed=false;armedB=false;AR=false;draw();window.scrollTo(0,0)}
+ else if(a=='lang'){S.lang=d.l;save();draw();if(queue.length)modal()}
+ else if(a=='ok'){queue.shift();modal()}
+ else if(a=='pv'){off--;draw()}
+ else if(a=='nx'){if(off<0){off++;draw()}}
+ else if(a=='an'){S.animal=d.k;save();draw()}
+ else if(a=='dtog'){S.diaryOn=!S.diaryOn;save();draw()}
+ else if(a=='pick'){pick=d.i;pickOpen=false;draw()}
+ else if(a=='ipk'){pickOpen=!pickOpen;draw()}
+ else if(a=='arr'){AR=!AR;draw()}
+ else if(a=='bkc'){BK=JSON.stringify(S);BKM=u('bkman');draw();try{navigator.clipboard.writeText(BK).then(function(){BKM=u('bkok');draw()},function(){})}catch(x){}}
+ else if(a=='bkr'){if(!armedB){armedB=true;BKM=u('bks');draw();return}armedB=false;try{var j=JSON.parse(BK);if(!j||typeof j!='object'||!j.data)throw 0;S=clean(j);save();BK='';BKM=u('bkdone');off=0;draw()}catch(x){BKM=u('bkerr');draw()}}
+ else if(a=='place'){queue.shift();modal();AR=true;P='today';off=0;draw();window.scrollTo(0,0)}
+ else if(a=='up'||a=='dn'){var ids=titleOrder().map(function(x){return x.id}),i2=+d.i,j2=a=='up'?i2-1:i2+1;if(j2>=0&&j2<ids.length){var tmp=ids[i2];ids[i2]=ids[j2];ids[j2]=tmp;S.order=ids;save();draw()}}
+ else if(a=='tog'){var i=S.habits.indexOf(d.id);if(i>-1)S.habits.splice(i,1);else S.habits.push(d.id);save();draw()}
+ else if(a=='day'){var n=new Date();n.setHours(0,0,0,0);off=Math.round(dn(d.d)-Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())/864e5);P='today';draw();window.scrollTo(0,0)}
+ else if(a=='add'){var q=document.getElementById('nq').value.trim();if(!q)return;
+  var ti=document.getElementById('nt').value.trim()||q.replace(/[?]$/,''),id='c'+Date.now();
+  S.custom.push([id,q,document.getElementById('ny').value,pick,ti]);S.habits.push(id);DR={};pick='star';save();draw()}
+ else if(a=='reset'){if(!armed){armed=true;draw();setTimeout(function(){if(armed){armed=false;if(P=='edit')draw()}},4000);return}
+  S={lang:S.lang,habits:['food','move','sleep'],animal:'cat',custom:[],cfg:{},data:{},earned:{},diary:{},diaryOn:true,pos:{},order:[],name:S.name,g:S.g};save();armed=false;off=0;draw()}
+ else if(a=='ans'){var k=fmt(vd());S.data[k]=S.data[k]||{};S.data[k][d.id]=Number(d.v);
+  var fresh=achieved().filter(function(i){return !S.earned[i]});fresh.forEach(function(i){S.earned[i]=k});
+  save();draw();if(fresh.length){queue=queue.concat(fresh);modal()}}});
+document.addEventListener('change',function(e){var t=e.target;
+ if(t.id=='ny'){DR.y=t.value;return}
+ if(t.id=='gn'){S.g=t.value;save();draw();return}
+ if(t.id=='nm'){if(!t.value.trim())t.value=S.name;return}
+ if(!t.dataset.cfg)return;
+ var c=S.cfg[t.dataset.cfg]=S.cfg[t.dataset.cfg]||{};c[t.dataset.f]=t.dataset.f=='days'?+t.value:t.value;save();draw()});
+document.addEventListener('input',function(e){var t=e.target;
+ if(t.id=='bk'){BK=t.value;return}
+ if(t.id=='nm'){var nv=t.value.trim();if(nv){S.name=nv;save()}return}
+ if(t.id=='nq'){DR.q=t.value;return}
+ if(t.id=='nt'){DR.t=t.value;return}
+ if(t.id!='dr')return;
+ var v=t.value,re=/\S+/g,m,n=0,cut=0;
+ while((m=re.exec(v))){n++;if(n==1000)cut=m.index+m[0].length;if(n>1000){v=v.slice(0,cut);t.value=v;n=1000;break}}
+ var k=fmt(vd());if(v.trim())S.diary[k]=v;else delete S.diary[k];save();
+ document.getElementById('wc').textContent=n+' / 1000 '+u('wd')});
+function clean(j){var o={},D=/^\d{4}-\d{2}-\d{2}$/;
+ o.lang=LC[j.lang]?j.lang:'ro';o.animal=AN[j.animal]?j.animal:'cat';o.g=j.g=='m'?'m':'f';o.name=String(j.name||'Ioana').slice(0,24);o.diaryOn=j.diaryOn!==false;
+ o.habits=Array.isArray(j.habits)?j.habits.map(String):['food','move','sleep'];
+ o.custom=Array.isArray(j.custom)?j.custom.filter(function(a){return Array.isArray(a)&&/^[\w-]{1,30}$/.test(a[0])}).map(function(a){return a.slice(0,5).map(String)}):[];
+ o.order=Array.isArray(j.order)?j.order.map(String):[];
+ o.data={};for(var d in j.data||{}){if(!D.test(d))continue;var r={};for(var i in j.data[d])r[i]=Number(j.data[d][i])||0;o.data[d]=r}
+ o.diary={};for(var d2 in j.diary||{}){if(D.test(d2))o.diary[d2]=String(j.diary[d2]).slice(0,10000)}
+ o.earned={};for(var e in j.earned||{})o.earned[e]=String(j.earned[e]).slice(0,10);
+ o.cfg={};for(var c in j.cfg||{}){var q=j.cfg[c]||{};o.cfg[c]={days:+q.days>0?Math.min(365,+q.days):0,mode:q.mode=='t'?'t':'s'}}
+ o.pos={};for(var k in j.pos||{}){var p=j.pos[k];if(Array.isArray(p))o.pos[k]=[Math.max(18,Math.min(182,+p[0]||0)),Math.max(18,Math.min(244,+p[1]||0))]}
+ return o}
+function sp(e){var sv=DG.sv,pt=sv.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;var p=pt.matrixTransform(sv.getScreenCTM().inverse());return [Math.max(18,Math.min(182,p.x)),Math.max(18,Math.min(244,p.y))]}
+document.addEventListener('pointerdown',function(e){if(!AR)return;var g=e.target.closest('.it');if(!g)return;e.preventDefault();DG={g:g,id:g.dataset.id,sv:g.ownerSVGElement,p:null};try{g.setPointerCapture(e.pointerId)}catch(x){}});
+document.addEventListener('pointermove',function(e){if(!DG)return;var p=sp(e);DG.p=p;DG.g.setAttribute('transform','translate('+(p[0]-18)+' '+(p[1]-18)+') scale(.9)')});
+function endDrag(){if(!DG)return;if(DG.p){S.pos[DG.id]=[Math.round(DG.p[0]),Math.round(DG.p[1])];save()}DG=null}
+document.addEventListener('pointerup',endDrag);document.addEventListener('pointercancel',endDrag);
+/*DEMO*/draw();
+</script>
+<script>if('serviceWorker' in navigator&&location.protocol.indexOf('http')==0)navigator.serviceWorker.register('sw.js').catch(function(){})</script>
+</body>
+</html>
